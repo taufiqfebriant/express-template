@@ -1,0 +1,24 @@
+{
+  "name": "vue-sample",
+  "version": "0.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --mode development",
+    "build:dev": "vite build --mode development",
+    "build": "vite build --mode production",
+    "dev:mocked": "vite --config apps/vite.config.js --mode mocked",
+    "test:e2e": "echo \"Remember to run frontend and backend before test...\" && playwright test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@common/vue": "file:../../common/vue",
+    "chart.js": "^4.5.1",
+    "leaflet": "^1.9.4"
+  },
+  "msw": {
+    "workerDirectory": "public"
+  }
+}
