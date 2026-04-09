@@ -31,7 +31,8 @@ const create = async (req, res, next) => {
 
     for (const item of items) {
       const variant = await knex()('product_variants').where({ id: item.product_variant_id }).first();
-      const unitPrice = parseFloat(variant.price_adjustment) || 0;
+      const product = await knex()('products').where({ id: variant.product_id }).first();
+      const unitPrice = parseFloat(product.base_price) + parseFloat(variant.price_adjustment || 0);
       total_amount += unitPrice * item.quantity;
     }
 
@@ -51,7 +52,8 @@ const create = async (req, res, next) => {
 
       for (const item of items) {
         const variant = await trx('product_variants').where({ id: item.product_variant_id }).first();
-        const unitPrice = parseFloat(variant.price_adjustment) || 0;
+        const product = await trx('products').where({ id: variant.product_id }).first();
+        const unitPrice = parseFloat(product.base_price) + parseFloat(variant.price_adjustment || 0);
         const subtotal = unitPrice * item.quantity;
 
         await trx('order_items').insert({
