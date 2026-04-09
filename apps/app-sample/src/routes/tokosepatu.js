@@ -4,6 +4,7 @@ import tokosepatuController from '../controllers/tokosepatu.js';
 export default express
   .Router()
   .post('/orders', tokosepatuController.create)
+  .get('/orders', tokosepatuController.findAll)
   .patch('/orders/:order_number/status', tokosepatuController.updateStatus)
   .post('/orders/:order_number/return-request', tokosepatuController.requestReturn)
   .get('/orders/:order_number', tokosepatuController.findOne)

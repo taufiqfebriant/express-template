@@ -178,6 +178,34 @@ const findOne = async (req, res, next) => {
   }
 };
 
+const findAll = async (req, res, next) => {
+  try {
+    const orders = await knex()('orders').orderBy('created_at', 'desc');
+
+    for (const order of orders) {
+      const items = await knex()('order_items')
+        .join('product_variants', 'order_items.product_variant_id', 'product_variants.id')
+        .join('products', 'product_variants.product_id', 'products.id')
+        .where({ order_id: order.id })
+        .select(
+          'order_items.id',
+          'order_items.quantity',
+          'order_items.unit_price',
+          'order_items.subtotal',
+          'product_variants.size',
+          'product_variants.color',
+          'products.name as product_name',
+          'products.sku',
+        );
+      order.items = items;
+    }
+
+    return res.status(200).json(orders);
+  } catch (err) {
+    next(err);
+  }
+};
+
 const findProducts = async (req, res, next) => {
   try {
     const products = await knex()('products').select('*');
@@ -199,5 +227,6 @@ export default {
   updateStatus,
   requestReturn,
   findOne,
+  findAll,
   findProducts,
 };
