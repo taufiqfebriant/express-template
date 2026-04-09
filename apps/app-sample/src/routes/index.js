@@ -6,6 +6,7 @@ import sse from './sse.js';
 import tests from './tests.js';
 import webpush from './webpush.js';
 import fido from './fido.js';
+import tokosepatu from './tokosepatu.js';
 import * as auth from './auth.js';
 
 const router = express.Router();
@@ -21,6 +22,7 @@ export default ({ app }) => {
     router.use('/tests', tests), // for tests
     router.use('/webpush', webpush),
     router.use('/fido', fido),
+    router.use('/tokosepatu', tokosepatu),
   );
 
   // authentication stuff Below - you can remove if not needed (be aware of routing if you are customizing your auth)
