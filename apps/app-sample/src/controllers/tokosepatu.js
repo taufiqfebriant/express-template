@@ -83,7 +83,19 @@ const updateStatus = async (req, res, next) => {
     const { order_number } = req.params;
     const { status } = req.body;
 
-    const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+    const validStatuses = [
+      'pending',
+      'processing',
+      'shipped',
+      'delivered',
+      'return_requested',
+      'return_in_transit',
+      'return_received',
+      'return_accepted',
+      'return_rejected',
+      'refunded',
+      'cancelled',
+    ];
     if (!status || !validStatuses.includes(status)) {
       return res.status(400).json({ error: 'Invalid status' });
     }
@@ -96,6 +108,36 @@ const updateStatus = async (req, res, next) => {
     await knex()('orders').where({ order_number }).update({ status, updated_at: new Date() });
 
     return res.status(200).json({ order_number, status });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const requestReturn = async (req, res, next) => {
+  try {
+    const { order_number } = req.params;
+    const { reason } = req.body;
+
+    if (!reason) {
+      return res.status(400).json({ error: 'Return reason is required' });
+    }
+
+    const order = await knex()('orders').where({ order_number }).first();
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    if (order.status !== 'delivered') {
+      return res.status(400).json({ error: 'Only delivered orders can be returned' });
+    }
+
+    await knex()('orders').where({ order_number }).update({
+      status: 'return_requested',
+      return_reason: reason,
+      updated_at: new Date(),
+    });
+
+    return res.status(200).json({ success: true, status: 'return_requested' });
   } catch (err) {
     next(err);
   }
@@ -153,6 +195,7 @@ const findProducts = async (req, res, next) => {
 export default {
   create,
   updateStatus,
+  requestReturn,
   findOne,
   findProducts,
 };
